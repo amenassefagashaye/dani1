@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>አሰፋ ዲጂታል ቢንጎ - Admin</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Your styles -->
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+
+</head>
+<body>
+
+<!-- ===== Admin Password Check ===== -->
+<script>
+const pass = new URLSearchParams(window.location.search).get("pass");
+if(pass !== "asse2123"){
+    const input = prompt("Enter Admin Password:");
+    if(input !== "asse2123"){
+        alert("Wrong Password!");
+        window.location.href = "index.html";
+    }
+}
+</script>
+
+<!-- ===== Audio ===== -->
+<audio id="callAudio" preload="auto">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="winAudio" preload="auto">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ===== Main Container ===== -->
+<div class="border-container">
+  <div class="main-container">
+
+    <!-- Triple Borders -->
+    <div class="page-border green"></div>
+    <div class="page-border yellow"></div>
+    <div class="page-border red"></div>
+
+    <!-- ===== Admin Panel ===== -->
+    <div class="page-container active">
+
+      <div class="page-content">
+
+        <h2 class="amharic-text">አሰፋ ዲጂታል ቢንጎ - Admin Panel</h2>
+
+        <div id="status" style="margin:10px;color:lime;">Connecting...</div>
+
+        <button onclick="sendAdminCommand('startGame')">▶ Start Game</button>
+        <button onclick="sendAdminCommand('nextNumber')">🔢 Call Next Number</button>
+        <button onclick="sendAdminCommand('resetGame')">♻ Reset Game</button>
+        <button onclick="sendAdminCommand('announceWinner')">🏆 Announce Winner</button>
+
+        <div id="log" style="margin-top:15px;font-size:14px;"></div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== WebSocket Connection ===== -->
+<script>
+const statusDiv = document.getElementById("status");
+const logDiv = document.getElementById("log");
+
+const ws = new WebSocket("wss://YOUR-DENO-PROJECT.deno.dev");
+
+ws.onopen = () => {
+  statusDiv.textContent = "🟢 Connected to Server";
+};
+
+ws.onclose = () => {
+  statusDiv.textContent = "🔴 Disconnected";
+};
+
+ws.onmessage = (event) => {
+  logDiv.innerHTML += "Server: " + event.data + "<br>";
+};
+
+function sendAdminCommand(action){
+  const msg = {
+    type: "admin",
+    action: action
+  };
+  ws.send(JSON.stringify(msg));
+  logDiv.innerHTML += "Admin: " + action + "<br>";
+}
+</script>
+
+</body>
+</html>
